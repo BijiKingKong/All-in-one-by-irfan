@@ -1,0 +1,1977 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Magang Universitas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --secondary: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8fafc;
+        }
+        
+        .sidebar {
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar.collapsed {
+            width: 80px;
+        }
+        
+        .sidebar.collapsed .nav-text {
+            display: none;
+        }
+        
+        .sidebar.collapsed .logo-text {
+            display: none;
+        }
+        
+        .sidebar.collapsed ~ .main-content {
+            margin-left: 80px;
+        }
+        
+        .nav-item:hover {
+            background-color: rgba(79, 70, 229, 0.1);
+        }
+        
+        .nav-item.active {
+            background-color: rgba(79, 70, 229, 0.2);
+            border-left: 4px solid var(--primary);
+        }
+        
+        .status-approved {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--secondary);
+        }
+        
+        .status-rejected {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+        
+        .status-revision {
+            background-color: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+        
+        .status-pending {
+            background-color: rgba(156, 163, 175, 0.1);
+            color: #6b7280;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            border-radius: 4px;
+            background-color: #e2e8f0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            background-color: var(--primary);
+            transition: width 0.5s ease;
+        }
+        
+        .logbook-entry {
+            border-left: 4px solid var(--primary);
+        }
+        
+        .rating-stars {
+            color: #f59e0b;
+        }
+        
+        .certificate-border {
+            border: 20px solid #4f46e5;
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%234f46e5' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+        }
+        
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            
+            .print-content {
+                display: block !important;
+            }
+            
+            body {
+                background-color: white;
+            }
+            
+            .certificate-border {
+                border: none;
+                background-image: none;
+            }
+        }
+    </style>
+</head>
+<body class="flex">
+    <!-- Sidebar Navigation -->
+    <div class="sidebar bg-white h-screen shadow-lg fixed flex flex-col w-64">
+        <div class="p-4 flex items-center space-x-2 border-b">
+            <div class="bg-indigo-600 text-white p-2 rounded-lg">
+                <i class="fas fa-graduation-cap text-xl"></i>
+            </div>
+            <span class="logo-text text-xl font-bold text-indigo-600">MagangKu</span>
+        </div>
+        
+        <div class="flex-1 overflow-y-auto py-4">
+            <div class="px-4 mb-6">
+                <div class="flex items-center space-x-3 bg-indigo-50 p-3 rounded-lg">
+                    <div class="bg-indigo-100 p-2 rounded-full">
+                        <i class="fas fa-user text-indigo-600"></i>
+                    </div>
+                    <div>
+                        <div class="font-medium">Irfan Hakim</div>
+                        <div class="text-xs text-gray-500">Mahasiswa</div>
+                    </div>
+                </div>
+            </div>
+            
+            <nav>
+                <ul>
+                    <li class="nav-item active" id="nav-dashboard">
+                        <a href="#" class="flex items-center p-3 text-gray-700 hover:text-indigo-600" onclick="showDashboard()">
+                            <i class="fas fa-home mx-3"></i>
+                            <span class="nav-text">Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" id="nav-registration">
+                        <a href="#" class="flex items-center p-3 text-gray-700 hover:text-indigo-600" onclick="showRegistration()">
+                            <i class="fas fa-file-signature mx-3"></i>
+                            <span class="nav-text">Pendaftaran Magang</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" id="nav-approval">
+                        <a href="#" class="flex items-center p-3 text-gray-700 hover:text-indigo-600" onclick="showApproval()">
+                            <i class="fas fa-check-circle mx-3"></i>
+                            <span class="nav-text">Approval Magang</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" id="nav-mentoring">
+                        <a href="#" class="flex items-center p-3 text-gray-700 hover:text-indigo-600" onclick="showMentoring()">
+                            <i class="fas fa-chalkboard-teacher mx-3"></i>
+                            <span class="nav-text">Bimbingan</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" id="nav-report">
+                        <a href="#" class="flex items-center p-3 text-gray-700 hover:text-indigo-600" onclick="showReport()">
+                            <i class="fas fa-book mx-3"></i>
+                            <span class="nav-text">Laporan Magang</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" id="nav-grading">
+                        <a href="#" class="flex items-center p-3 text-gray-700 hover:text-indigo-600" onclick="showGrading()">
+                            <i class="fas fa-star mx-3"></i>
+                            <span class="nav-text">Penilaian</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" id="nav-certificate">
+                        <a href="#" class="flex items-center p-3 text-gray-700 hover:text-indigo-600" onclick="showCertificate()">
+                            <i class="fas fa-certificate mx-3"></i>
+                            <span class="nav-text">Sertifikat</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" id="nav-data-view">
+                        <a href="#" class="flex items-center p-3 text-gray-700 hover:text-indigo-600" onclick="showDataView()">
+                            <i class="fas fa-database mx-3"></i>
+                            <span class="nav-text">View Data Prodi</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        
+        <div class="p-4 border-t">
+            <button class="flex items-center justify-center w-full p-2 text-gray-600 hover:text-indigo-600" onclick="toggleSidebar()">
+                <i class="fas fa-chevron-left"></i>
+                <span class="nav-text ml-2">Collapse</span>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content flex-1 ml-64 transition-all duration-300">
+        <header class="bg-white shadow-sm p-4 flex justify-between items-center">
+            <h1 class="text-xl font-semibold text-gray-800" id="page-title">Dashboard</h1>
+            <div class="flex items-center space-x-4">
+                <button class="p-2 text-gray-500 hover:text-indigo-600">
+                    <i class="fas fa-bell"></i>
+                    <span class="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500"></span>
+                </button>
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center">
+                        <i class="fas fa-user text-indigo-600"></i>
+                    </div>
+                    <span class="text-sm font-medium">Irfan Hakim </span>
+                </div>
+            </div>
+        </header>
+        
+        <main class="p-6">
+            <!-- Dashboard Content -->
+            <div id="dashboard-content">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-medium text-gray-700">Status Magang</h3>
+                            <span class="px-3 py-1 rounded-full text-xs font-medium status-approved">Disetujui</span>
+                        </div>
+                        <div class="mb-4">
+                            <div class="flex justify-between text-sm text-gray-600 mb-1">
+                                <span>Progress Magang</span>
+                                <span>65%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 65%"></div>
+                            </div>
+                        </div>
+                        <div class="text-sm text-gray-600">
+                            <div class="flex justify-between py-1">
+                                <span>Tanggal Mulai</span>
+                                <span class="font-medium">15 Jan 2023</span>
+                            </div>
+                            <div class="flex justify-between py-1">
+                                <span>Tanggal Selesai</span>
+                                <span class="font-medium">15 Apr 2023</span>
+                            </div>
+                            <div class="flex justify-between py-1">
+                                <span>Perusahaan</span>
+                                <span class="font-medium">PT. Teknologi Maju</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="font-medium text-gray-700 mb-4">Pembimbing</h3>
+                        <div class="flex items-center space-x-4 mb-4">
+                            <div class="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center">
+                                <i class="fas fa-user-tie text-indigo-600"></i>
+                            </div>
+                            <div>
+                                <div class="font-medium">Dr. Ahmad S.T., M.Kom</div>
+                                <div class="text-sm text-gray-500">Dosen Teknik Informatika</div>
+                            </div>
+                        </div>
+                        <div class="text-sm text-gray-600">
+                            <div class="flex items-center py-2">
+                                <i class="fas fa-envelope mr-2 text-indigo-500"></i>
+                                <span>ahmad@univ.ac.id</span>
+                            </div>
+                            <div class="flex items-center py-2">
+                                <i class="fas fa-phone mr-2 text-indigo-500"></i>
+                                <span>08123456789</span>
+                            </div>
+                            <div class="flex items-center py-2">
+                                <i class="fas fa-calendar-alt mr-2 text-indigo-500"></i>
+                                <span>Jadwal Bimbingan: Rabu, 13.00-15.00</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="font-medium text-gray-700 mb-4">Aktivitas Terkini</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-start">
+                                <div class="bg-green-100 p-2 rounded-full mr-3 mt-1">
+                                    <i class="fas fa-check text-green-600 text-sm"></i>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium">Laporan mingguan disetujui</div>
+                                    <div class="text-xs text-gray-500">2 jam yang lalu</div>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="bg-blue-100 p-2 rounded-full mr-3 mt-1">
+                                    <i class="fas fa-comment text-blue-600 text-sm"></i>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium">Pembimbing memberikan feedback</div>
+                                    <div class="text-xs text-gray-500">1 hari yang lalu</div>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="bg-yellow-100 p-2 rounded-full mr-3 mt-1">
+                                    <i class="fas fa-exclamation text-yellow-600 text-sm"></i>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium">Laporan bulanan perlu revisi</div>
+                                    <div class="text-xs text-gray-500">3 hari yang lalu</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow p-6 mb-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-medium text-gray-700">Timeline Magang</h3>
+                        <button class="text-sm text-indigo-600 hover:text-indigo-800">Lihat Semua</button>
+                    </div>
+                    <div class="relative">
+                        <div class="absolute h-full w-0.5 bg-gray-200 left-4"></div>
+                        <div class="space-y-6">
+                            <div class="flex items-start">
+                                <div class="bg-indigo-600 text-white p-1 rounded-full mr-3 mt-1">
+                                    <i class="fas fa-check text-xs"></i>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium">Pendaftaran Magang</div>
+                                    <div class="text-xs text-gray-500">10 Jan 2023</div>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="bg-indigo-600 text-white p-1 rounded-full mr-3 mt-1">
+                                    <i class="fas fa-check text-xs"></i>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium">Approval Prodi</div>
+                                    <div class="text-xs text-gray-500">12 Jan 2023</div>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="bg-indigo-600 text-white p-1 rounded-full mr-3 mt-1">
+                                    <i class="fas fa-check text-xs"></i>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium">Mulai Magang</div>
+                                    <div class="text-xs text-gray-500">15 Jan 2023</div>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="bg-indigo-400 text-white p-1 rounded-full mr-3 mt-1">
+                                    <i class="fas fa-spinner text-xs"></i>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium">Bimbingan</div>
+                                    <div class="text-xs text-gray-500">Sedang Berlangsung</div>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="bg-gray-200 text-gray-500 p-1 rounded-full mr-3 mt-1">
+                                    <i class="fas fa-ellipsis-h text-xs"></i>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium text-gray-400">Penilaian</div>
+                                    <div class="text-xs text-gray-400">Belum Dimulai</div>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="bg-gray-200 text-gray-500 p-1 rounded-full mr-3 mt-1">
+                                    <i class="fas fa-ellipsis-h text-xs"></i>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium text-gray-400">Sertifikat</div>
+                                    <div class="text-xs text-gray-400">Belum Dimulai</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Registration Form Content -->
+            <div id="registration-content" class="hidden">
+                <div class="bg-white rounded-lg shadow p-6 mb-6">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-6">Formulir Pendaftaran Magang</h2>
+                    
+                    <form id="internship-form">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
+                                <input type="text" class="w-full px-4 py-2 border rounded-lg focus:ring-indigo-500 focus:border-indigo-500" value="Irfan Hakim" readonly>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">NIM</label>
+                                <input type="text" class="w-full px-4 py-2 border rounded-lg focus:ring-indigo-500 focus:border-indigo-500" value="24.01.5164" readonly>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Program Studi</label>
+                                <input type="text" class="w-full px-4 py-2 border rounded-lg focus:ring-indigo-500 focus:border-indigo-500" value="Teknik Informatika" readonly>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Angkatan</label>
+                                <input type="text" class="w-full px-4 py-2 border rounded-lg focus:ring-indigo-500 focus:border-indigo-500" value="2023" readonly>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Nama Perusahaan</label>
+                            <input type="text" id="company-name" class="w-full px-4 py-2 border rounded-lg focus:ring-indigo-500 focus:border-indigo-500" placeholder="Masukkan nama perusahaan" required>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Alamat Perusahaan</label>
+                                <textarea id="company-address" class="w-full px-4 py-2 border rounded-lg focus:ring-indigo-500 focus:border-indigo-500" rows="3" placeholder="Masukkan alamat perusahaan" required></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Kontak Perusahaan</label>
+                                <input type="text" id="company-contact" class="w-full px-4 py-2 border rounded-lg focus:ring-indigo-500 focus:border-indigo-500" placeholder="Nomor telepon/email perusahaan" required>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Mulai Magang</label>
+                                <input type="date" id="start-date" class="w-full px-4 py-2 border rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Selesai Magang</label>
+                                <input type="date" id="end-date" class="w-full px-4 py-2 border rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Judul Proyek Magang</label>
+                            <input type="text" id="project-title" class="w-full px-4 py-2 border rounded-lg focus:ring-indigo-500 focus:border-indigo-500" placeholder="Masukkan judul proyek magang" required>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi Proyek Magang</label>
+                            <textarea id="project-description" class="w-full px-4 py-2 border rounded-lg focus:ring-indigo-500 focus:border-indigo-500" rows="4" placeholder="Jelaskan secara detail tentang proyek magang yang akan dilakukan" required></textarea>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Upload Surat Penerimaan Magang</label>
+                            <div class="mt-1 flex items-center">
+                                <label for="acceptance-letter" class="cursor-pointer bg-indigo-50 text-indigo-600 px-4 py-2 rounded-lg border border-indigo-200 hover:bg-indigo-100">
+                                    <i class="fas fa-upload mr-2"></i>Pilih File
+                                </label>
+                                <input id="acceptance-letter" type="file" class="hidden" accept=".pdf,.doc,.docx" required>
+                                <span id="file-name" class="ml-2 text-sm text-gray-500">Belum ada file dipilih</span>
+                            </div>
+                            <p class="mt-1 text-xs text-gray-500">Format file: PDF, DOC, DOCX (maks. 2MB)</p>
+                        </div>
+                        
+                        <div class="flex justify-end space-x-3">
+                            <button type="button" onclick="resetRegistrationForm()" class="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+                                <i class="fas fa-undo mr-2"></i>Reset
+                            </button>
+                            <button type="button" onclick="submitRegistration()" class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                                <i class="fas fa-paper-plane mr-2"></i>Kirim Pendaftaran
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Riwayat Pendaftaran</h2>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Perusahaan</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Periode</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">12 Jan 2023</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">PT. Teknologi Maju</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">15 Jan - 15 Apr 2023</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-3 py-1 rounded-full text-xs font-medium status-approved">Disetujui</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <button class="text-indigo-600 hover:text-indigo-900 mr-3" onclick="viewRegistrationDetail(1)">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="text-green-600 hover:text-green-900" onclick="downloadRegistrationFile(1)">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">5 Des 2022</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">PT. Digital Solusi</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">10 Jan - 10 Mar 2023</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-3 py-1 rounded-full text-xs font-medium status-rejected">Ditolak</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <button class="text-indigo-600 hover:text-indigo-900 mr-3" onclick="viewRegistrationDetail(2)">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="text-green-600 hover:text-green-900" onclick="downloadRegistrationFile(2)">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">20 Nov 2022</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">PT. Inovasi Teknologi</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">1 Feb - 30 Apr 2023</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-3 py-1 rounded-full text-xs font-medium status-revision">Direvisi</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <button class="text-indigo-600 hover:text-indigo-900 mr-3" onclick="viewRegistrationDetail(3)">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="text-yellow-600 hover:text-yellow-900 mr-3" onclick="editRegistration(3)">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="text-green-600 hover:text-green-900" onclick="downloadRegistrationFile(3)">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Approval Content -->
+            <div id="approval-content" class="hidden">
+                <div class="bg-white rounded-lg shadow p-6 mb-6">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-6">Status Approval Magang</h2>
+                    
+                    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-info-circle text-blue-400"></i>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm text-blue-700">
+                                    Proses approval magang dilakukan oleh Program Studi setelah mahasiswa mengajukan pendaftaran magang. 
+                                    Status akan diperbarui dalam waktu maksimal 7 hari kerja setelah pengajuan.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Perusahaan</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Periode</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Keterangan</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">12 Jan 2023</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">PT. Teknologi Maju</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">15 Jan - 15 Apr 2023</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-3 py-1 rounded-full text-xs font-medium status-approved">Disetujui</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Magang disetujui oleh Prodi</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <button class="text-indigo-600 hover:text-indigo-900 mr-3" onclick="viewApprovalDetail(1)">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="text-green-600 hover:text-green-900" onclick="downloadApprovalLetter(1)">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">5 Des 2022</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">PT. Digital Solusi</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">10 Jan - 10 Mar 2023</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-3 py-1 rounded-full text-xs font-medium status-rejected">Ditolak</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Perusahaan tidak memenuhi kriteria</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <button class="text-indigo-600 hover:text-indigo-900 mr-3" onclick="viewApprovalDetail(2)">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">20 Nov 2022</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">PT. Inovasi Teknologi</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">1 Feb - 30 Apr 2023</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-3 py-1 rounded-full text-xs font-medium status-revision">Direvisi</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Perlu melengkapi dokumen</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <button class="text-indigo-600 hover:text-indigo-900 mr-3" onclick="viewApprovalDetail(3)">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="text-yellow-600 hover:text-yellow-900" onclick="resubmitApproval(3)">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="mt-6">
+                        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                            <h3 class="font-medium text-gray-800 mb-2">Proses Approval</h3>
+                            <ol class="relative border-l border-gray-200 mt-4">
+                                <li class="mb-6 ml-4">
+                                    <div class="absolute w-3 h-3 bg-indigo-600 rounded-full mt-1.5 -left-1.5 border border-white"></div>
+                                    <h4 class="text-base font-medium text-gray-900">Pengajuan Pendaftaran</h4>
+                                    <p class="text-sm text-gray-500">Mahasiswa mengajukan pendaftaran magang</p>
+                                    <div class="text-xs text-gray-400">10 Jan 2023</div>
+                                </li>
+                                <li class="mb-6 ml-4">
+                                    <div class="absolute w-3 h-3 bg-indigo-600 rounded-full mt-1.5 -left-1.5 border border-white"></div>
+                                    <h4 class="text-base font-medium text-gray-900">Review oleh Prodi</h4>
+                                    <p class="text-sm text-gray-500">Prodi melakukan review dokumen dan kelengkapan</p>
+                                    <div class="text-xs text-gray-400">11 Jan 2023</div>
+                                </li>
+                                <li class="mb-6 ml-4">
+                                    <div class="absolute w-3 h-3 bg-indigo-600 rounded-full mt-1.5 -left-1.5 border border-white"></div>
+                                    <h4 class="text-base font-medium text-gray-900">Approval</h4>
+                                    <p class="text-sm text-gray-500">Prodi menyetujui pendaftaran magang</p>
+                                    <div class="text-xs text-gray-400">12 Jan 2023</div>
+                                </li>
+                                <li class="ml-4">
+                                    <div class="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -left-1.5 border border-white"></div>
+                                    <h4 class="text-base font-medium text-gray-400">Mulai Magang</h4>
+                                    <p class="text-sm text-gray-400">Mahasiswa memulai magang di perusahaan</p>
+                                    <div class="text-xs text-gray-400">15 Jan 2023</div>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Mentoring Content -->
+            <div id="mentoring-content" class="hidden">
+                <div class="bg-white rounded-lg shadow p-6 mb-6">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-6">Jadwal Bimbingan</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                        <div class="bg-indigo-50 rounded-lg p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="font-medium text-indigo-700">Bimbingan Terjadwal</h3>
+                                <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded">Rabu, 13.00-15.00</span>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-4">Jadwal rutin bimbingan dengan pembimbing akademik</p>
+                            <button class="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700" onclick="showScheduleModal()">
+                                <i class="fas fa-calendar-check mr-2"></i>Jadwalkan Pertemuan
+                            </button>
+                        </div>
+                        
+                        <div class="bg-white border border-gray-200 rounded-lg p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="font-medium text-gray-700">Bimbingan Mendatang</h3>
+                                <span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">15 Mar 2023</span>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-2">Review laporan mingguan</p>
+                            <p class="text-xs text-gray-500 mb-4">13.00 - 14.00, Ruang Bimbingan 3</p>
+                            <button class="w-full bg-white text-indigo-600 py-2 rounded-lg border border-indigo-200 hover:bg-indigo-50" onclick="viewUpcomingMentoring()">
+                                <i class="fas fa-info-circle mr-2"></i>Detail
+                            </button>
+                        </div>
+                        
+                        <div class="bg-white border border-gray-200 rounded-lg p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="font-medium text-gray-700">Bimbingan Terakhir</h3>
+                                <span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">8 Mar 2023</span>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-2">Diskusi progress magang</p>
+                            <p class="text-xs text-gray-500 mb-4">13.30 - 14.45, Ruang Bimbingan 3</p>
+                            <button class="w-full bg-white text-indigo-600 py-2 rounded-lg border border-indigo-200 hover:bg-indigo-50" onclick="viewLastMentoringNotes()">
+                                <i class="fas fa-file-alt mr-2"></i>Catatan
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-lg font-medium text-gray-800 mb-4">Riwayat Bimbingan</h3>
+                        
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Topik</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Durasi</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">8 Mar 2023</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Progress Magang Minggu 7</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">75 menit</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-3 py-1 rounded-full text-xs font-medium status-approved">Selesai</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <button class="text-indigo-600 hover:text-indigo-900 mr-3" onclick="viewMentoringDetail(1)">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="text-green-600 hover:text-green-900" onclick="downloadMentoringNotes(1)">
+                                                <i class="fas fa-download"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">1 Mar 2023</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Review Laporan Bulanan</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">60 menit</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-3 py-1 rounded-full text-xs font-medium status-approved">Selesai</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <button class="text-indigo-600 hover:text-indigo-900 mr-3" onclick="viewMentoringDetail(2)">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="text-green-600 hover:text-green-900" onclick="downloadMentoringNotes(2)">
+                                                <i class="fas fa-download"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">22 Feb 2023</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Kendala Teknis</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">45 menit</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-3 py-1 rounded-full text-xs font-medium status-approved">Selesai</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <button class="text-indigo-600 hover:text-indigo-900 mr-3" onclick="viewMentoringDetail(3)">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="text-green-600 hover:text-green-900" onclick="downloadMentoringNotes(3)">
+                                                <i class="fas fa-download"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-medium text-gray-800 mb-4">Formulir Permintaan Bimbingan</h3>
+                        
+                        <form id="mentoring-request-form">
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Topik Bimbingan</label>
+                                <input type="text" id="mentoring-topic" class="w-full px-4 py-2 border rounded-lg focus:ring-indigo-500 focus:border-indigo-500" placeholder="Masukkan topik yang ingin dibahas" required>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal</label>
+                                    <input type="date" id="mentoring-date" class="w-full px-4 py-2 border rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Waktu</label>
+                                    <input type="time" id="mentoring-time" class="w-full px-4 py-2 border rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Tipe Bimbingan</label>
+                                <select id="mentoring-type" class="w-full px-4 py-2 border rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+                                    <option value="">Pilih tipe bimbingan</option>
+                                    <option value="online">Online (Zoom/Meet)</option>
+                                    <option value="offline">Offline (Kampus)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
+                                <textarea id="mentoring-description" class="w-full px-4 py-2 border rounded-lg focus:ring-indigo-500 focus:border-indigo-500" rows="3" placeholder="Jelaskan secara detail apa yang ingin didiskusikan" required></textarea>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Upload Dokumen Pendukung</label>
+                                <div class="mt-1 flex items-center">
+                                    <label for="supporting-docs" class="cursor-pointer bg-indigo-50 text-indigo-600 px-4 py-2 rounded-lg border border-indigo-200 hover:bg-indigo-100">
+                                        <i class="fas fa-upload mr-2"></i>Pilih File
+                                    </label>
+                                    <input id="supporting-docs" type="file" class="hidden" accept=".pdf,.doc,.docx,.jpg,.png">
+                                    <span id="supporting-file-name" class="ml-2 text-sm text-gray-500">Belum ada file dipilih</span>
+                                </div>
+                                <p class="mt-1 text-xs text-gray-500">Format file: PDF, DOC, DOCX, JPG, PNG (maks. 5MB)</p>
+                            </div>
+                            
+                            <div class="flex justify-end">
+                                <button type="button" onclick="submitMentoringRequest()" class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                                    <i class="fas fa-paper-plane mr-2"></i>Kirim Permintaan
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Report Content -->
+            <div id="report-content" class="hidden">
+                <div class="bg-white rounded-lg shadow p-6 mb-6">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-6">Laporan Magang</h2>
+                    
+                    <div class="mb-8">
+                        <h3 class="text-lg font-medium text-gray-800 mb-4">Log Book Kegiatan</h3>
+                        
+                        <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 class="font-medium text-gray-700">Minggu 7 (6 Mar - 12 Mar 2023)</h4>
+                                <span class="px-3 py-1 rounded-full text-xs font-medium status-approved">Disetujui</span>
+                            </div>
+                            
+                            <div class="space-y-3">
+                                <div class="logbook-entry bg-white p-3 rounded-lg">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <div class="font-medium">Implementasi Modul User</div>
+                                            <div class="text-sm text-gray-600">Membuat CRUD untuk manajemen user</div>
+                                        </div>
+                                        <div class="text-sm text-gray-500">8 jam</div>
+                                    </div>
+                                </div>
+                                <div class="logbook-entry bg-white p-3 rounded-lg">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <div class="font-medium">Testing API</div>
+                                            <div class="text-sm text-gray-600">Melakukan unit test dan integration test</div>
+                                        </div>
+                                        <div class="text-sm text-gray-500">6 jam</div>
+                                    </div>
+                                </div>
+                                <div class="logbook-entry bg-white p-3 rounded-lg">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <div class="font-medium">Bug Fixing</div>
+                                            <div class="text-sm text-gray-600">Memperbaiki bug pada modul sebelumnya</div>
+                                        </div>
+                                        <div class="text-sm text-gray-500">4 jam</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-3 text-sm text-gray-600">
+                                <div class="flex items-center">
+                                    <i class="fas fa-comment-alt mr-2 text-indigo-500"></i>
+                                    <span>Feedback pembimbing: "Progress baik, lanjutkan pengembangan fitur berikutnya"</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 class="font-medium text-gray-700">Minggu 6 (27 Feb - 5 Mar 2023)</h4>
+                                <span class="px-3 py-1 rounded-full text-xs font-medium status-approved">Disetujui</span>
+                            </div>
+                            
+                            <div class="space-y-3">
+                                <div class="logbook-entry bg-white p-3 rounded-lg">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <div class="font-medium">Desain Database</div>
+                                            <div class="text-sm text-gray-600">Membuat ERD dan skema database</div>
+                                        </div>
+                                        <div class="text-sm text-gray-500">10 jam</div>
+                                    </div>
+                                </div>
+                                <div class="logbook-entry bg-white p-3 rounded-lg">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <div class="font-medium">Setup Environment</div>
+                                            <div class="text-sm text-gray-600">Menyiapkan development environment</div>
+                                        </div>
+                                        <div class="text-sm text-gray-500">8 jam</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700" onclick="showLogbookModal()">
+                            <i class="fas fa-plus mr-2"></i>Tambah Log Book
+                        </button>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-800 mb-4">Laporan Periodik</h3>
+                        
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jenis Laporan</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Periode</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal Submit</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Laporan Mingguan</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">6 Mar - 12 Mar 2023</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-3 py-1 rounded-full text-xs font-medium status-approved">Disetujui</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">13 Mar 2023</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <button class="text-indigo-600 hover:text-indigo-900 mr-3" onclick="viewReportDetail(1)">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="text-green-600 hover:text-green-900" onclick="downloadReport(1)">
+                                                <i class="fas fa-download"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Laporan Bulanan</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Feb 2023</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-3 py-1 rounded-full text-xs font-medium status-revision">Direvisi</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">1 Mar 2023</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <button class="text-indigo-600 hover:text-indigo-900 mr-3" onclick="viewReportDetail(2)">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="text-yellow-600 hover:text-yellow-900 mr-3" onclick="editReport(2)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="text-green-600 hover:text-green-900" onclick="downloadReport(2)">
+                                                <i class="fas fa-download"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Laporan Mingguan</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">27 Feb - 5 Mar 2023</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-3 py-1 rounded-full text-xs font-medium status-approved">Disetujui</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">6 Mar 2023</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <button class="text-indigo-600 hover:text-indigo-900 mr-3" onclick="viewReportDetail(3)">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="text-green-600 hover:text-green-900" onclick="downloadReport(3)">
+                                                <i class="fas fa-download"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="mt-6">
+                            <button class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700" onclick="showReportUploadModal()">
+                                <i class="fas fa-file-upload mr-2"></i>Upload Laporan Baru
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Grading Content -->
+            <div id="grading-content" class="hidden">
+                <div class="bg-white rounded-lg shadow p-6 mb-6">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-6">Penilaian Magang</h2>
+                    
+                    <div class="mb-8">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-medium text-gray-800">Penilaian dari Perusahaan</h3>
+                            <span class="px-3 py-1 rounded-full text-xs font-medium status-approved">Tersedia</span>
+                        </div>
+                        
+                        <div class="bg-white border border-gray-200 rounded-lg p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h4 class="font-medium text-gray-700">Detail Penilaian</h4>
+                                <button class="text-indigo-600 hover:text-indigo-800 text-sm" onclick="downloadCompanyGrading()">
+                                    <i class="fas fa-download mr-1"></i>Unduh Penilaian
+                                </button>
+                            </div>
+                            
+                            <div class="space-y-6">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Kedisiplinan</label>
+                                    <div class="flex items-center space-x-4">
+                                        <div class="flex-1 bg-gray-200 rounded-full h-2.5">
+                                            <div class="bg-green-500 h-2.5 rounded-full" style="width: 85%"></div>
+                                        </div>
+                                        <span class="text-sm font-medium">85/100</span>
+                                        <div class="rating-stars">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star-half-alt"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Kemampuan Teknis</label>
+                                    <div class="flex items-center space-x-4">
+                                        <div class="flex-1 bg-gray-200 rounded-full h-2.5">
+                                            <div class="bg-green-500 h-2.5 rounded-full" style="width: 90%"></div>
+                                        </div>
+                                        <span class="text-sm font-medium">90/100</span>
+                                        <div class="rating-stars">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Kreativitas & Inovasi</label>
+                                    <div class="flex items-center space-x-4">
+                                        <div class="flex-1 bg-gray-200 rounded-full h-2.5">
+                                            <div class="bg-green-500 h-2.5 rounded-full" style="width: 80%"></div>
+                                        </div>
+                                        <span class="text-sm font-medium">80/100</span>
+                                        <div class="rating-stars">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="far fa-star"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Kerjasama Tim</label>
+                                    <div class="flex items-center space-x-4">
+                                        <div class="flex-1 bg-gray-200 rounded-full h-2.5">
+                                            <div class="bg-green-500 h-2.5 rounded-full" style="width: 88%"></div>
+                                        </div>
+                                        <span class="text-sm font-medium">88/100</span>
+                                        <div class="rating-stars">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star-half-alt"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Nilai Akhir</label>
+                                    <div class="flex items-center space-x-4">
+                                        <div class="flex-1 bg-gray-200 rounded-full h-2.5">
+                                            <div class="bg-green-500 h-2.5 rounded-full" style="width: 86%"></div>
+                                        </div>
+                                        <span class="text-lg font-bold">86 (A)</span>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Komentar & Saran</label>
+                                    <div class="bg-gray-50 p-4 rounded-lg">
+                                        <p class="text-gray-700">Irfan menunjukkan kemampuan teknis yang sangat baik dan dapat bekerja sama dengan tim. Dia juga memiliki sikap yang baik dan disiplin dalam menyelesaikan tugas. Kami sangat puas dengan kinerjanya selama magang di perusahaan kami.</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between pt-4 border-t">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-700">Penilai:</p>
+                                        <p class="text-gray-600">Dr. Budi S.T., M.Kom</p>
+                                        <p class="text-sm text-gray-500">Pembimbing Perusahaan, PT. Teknologi Maju</p>
+                                    </div>
+                                    <div class="text-sm text-gray-500">
+                                        <p>Tanggal Penilaian: 16 Apr 2023</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-medium text-gray-800">Penilaian dari Pembimbing Akademik</h3>
+                            <span class="px-3 py-1 rounded-full text-xs font-medium status-approved">Tersedia</span>
+                        </div>
+                        
+                        <div class="bg-white border border-gray-200 rounded-lg p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h4 class="font-medium text-gray-700">Detail Penilaian</h4>
+                                <button class="text-indigo-600 hover:text-indigo-800 text-sm" onclick="downloadAcademicGrading()">
+                                    <i class="fas fa-download mr-1"></i>Unduh Penilaian
+                                </button>
+                            </div>
+                            
+                            <div class="space-y-6">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Kualitas Laporan</label>
+                                    <div class="flex items-center space-x-4">
+                                        <div class="flex-1 bg-gray-200 rounded-full h-2.5">
+                                            <div class="bg-green-500 h-2.5 rounded-full" style="width: 88%"></div>
+                                        </div>
+                                        <span class="text-sm font-medium">88/100</span>
+                                        <div class="rating-stars">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star-half-alt"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Kemampuan Analisis</label>
+                                    <div class="flex items-center space-x-4">
+                                        <div class="flex-1 bg-gray-200 rounded-full h-2.5">
+                                            <div class="bg-green-500 h-2.5 rounded-full" style="width: 85%"></div>
+                                        </div>
+                                        <span class="text-sm font-medium">85/100</span>
+                                        <div class="rating-stars">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="far fa-star"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Presentasi</label>
+                                    <div class="flex items-center space-x-4">
+                                        <div class="flex-1 bg-gray-200 rounded-full h-2.5">
+                                            <div class="bg-green-500 h-2.5 rounded-full" style="width: 90%"></div>
+                                        </div>
+                                        <span class="text-sm font-medium">90/100</span>
+                                        <div class="rating-stars">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Nilai Akhir</label>
+                                    <div class="flex items-center space-x-4">
+                                        <div class="flex-1 bg-gray-200 rounded-full h-2.5">
+                                            <div class="bg-green-500 h-2.5 rounded-full" style="width: 87%"></div>
+                                        </div>
+                                        <span class="text-lg font-bold">87 (A)</span>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Komentar & Saran</label>
+                                    <div class="bg-gray-50 p-4 rounded-lg">
+                                        <p class="text-gray-700">Irfan telah menunjukkan perkembangan yang baik selama magang. Laporan yang dibuat cukup komprehensif dan analisis yang dilakukan menunjukkan pemahaman yang baik terhadap materi. Presentasi akhir juga dilakukan dengan baik dan profesional.</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between pt-4 border-t">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-700">Penilai:</p>
+                                        <p class="text-gray-600">Dr. Ahmad S.T., M.Kom</p>
+                                        <p class="text-sm text-gray-500">Pembimbing Akademik, Universitas Teknologi</p>
+                                    </div>
+                                    <div class="text-sm text-gray-500">
+                                        <p>Tanggal Penilaian: 18 Apr 2023</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8 bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-medium text-gray-800 mb-4">Nilai Akhir Magang</h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="bg-indigo-50 p-4 rounded-lg">
+                                <div class="text-center">
+                                    <div class="text-4xl font-bold text-indigo-600 mb-2">86.5</div>
+                                    <div class="text-lg font-medium text-gray-700">Nilai Akhir</div>
+                                    <div class="text-sm text-gray-500">(Rata-rata perusahaan & akademik)</div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white border border-gray-200 p-4 rounded-lg">
+                                <div class="text-center">
+                                    <div class="text-3xl font-bold text-gray-800 mb-2">A</div>
+                                    <div class="text-lg font-medium text-gray-700">Predikat</div>
+                                    <div class="text-sm text-gray-500">(Sangat Memuaskan)</div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white border border-gray-200 p-4 rounded-lg">
+                                <div class="text-center">
+                                    <div class="text-3xl font-bold text-gray-800 mb-2">4</div>
+                                    <div class="text-lg font-medium text-gray-700">SKS</div>
+                                    <div class="text-sm text-gray-500">(Diakui sebagai mata kuliah magang)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Certificate Content -->
+            <div id="certificate-content" class="hidden">
+                <div class="bg-white rounded-lg shadow p-6 mb-6">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-6">Sertifikat Magang</h2>
+                    
+                    <div class="flex justify-between items-center mb-6">
+                        <div class="bg-green-50 border-l-4 border-green-400 p-4 flex-1 mr-4">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-check-circle text-green-400"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm text-green-700">
+                                        Selamat! Anda telah menyelesaikan program magang dan semua persyaratan. Sertifikat magang Anda sudah tersedia.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="window.print()" class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 no-print">
+                            <i class="fas fa-print mr-2"></i>Cetak Sertifikat
+                        </button>
+                    </div>
+                    
+                    <div class="flex justify-center">
+                        <div class="certificate-border p-8 rounded-lg text-center max-w-4xl w-full">
+                            <div class="mb-8">
+                                <h1 class="text-4xl font-bold uppercase text-indigo-800">Sertifikat Magang</h1>
+                                <p class="text-xl mt-2">Diberikan kepada:</p>
+                            </div>
+                            
+                            <div class="text-center mb-8">
+                                <h2 class="text-3xl font-bold mb-2">Irfan Hakim</h2>
+                                <p class="text-xl">NIM: 24.01.5164</p>
+                                <p class="text-xl">Program Studi: Teknik Informatika</p>
+                            </div>
+                            
+                            <div class="mb-8">
+                                <p class="text-center text-xl mb-4">Telah menyelesaikan program magang di:</p>
+                                <h3 class="text-2xl font-bold text-center mb-2">PT. Teknologi Maju</h3>
+                                <p class="text-xl">15 Januari 2023 - 15 April 2023</p>
+                            </div>
+                            
+                            <div class="mb-8">
+                                <h4 class="text-xl font-bold mb-4 text-center">Hasil Penilaian:</h4>
+                                <div class="grid grid-cols-2 gap-4 max-w-md mx-auto text-lg">
+                                    <div class="text-right font-medium">Nilai Perusahaan:</div>
+                                    <div class="text-left">86 (A)</div>
+                                    <div class="text-right font-medium">Nilai Akademik:</div>
+                                    <div class="text-left">87 (A)</div>
+                                    <div class="text-right font-medium">Nilai Akhir:</div>
+                                    <div class="text-left font-bold">86.5 (A)</div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex justify-between mt-12">
+                                <div class="text-center">
+                                    <div class="mb-16 h-1 border-b-2 border-black w-48 mx-auto"></div>
+                                    <p class="text-lg">Pembimbing Perusahaan</p>
+                                    <p class="text-xl font-bold">Dr. Budi S.T., M.Kom</p>
+                                    <p class="text-lg">PT. Teknologi Maju</p>
+                                </div>
+                                <div class="text-center">
+                                    <div class="mb-16 h-1 border-b-2 border-black w-48 mx-auto"></div>
+                                    <p class="text-lg">Pembimbing Akademik</p>
+                                    <p class="text-xl font-bold">Dr. Ahmad S.T., M.Kom</p>
+                                    <p class="text-lg">Universitas Teknologi</p>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center mt-8">
+                                <p class="text-sm">Nomor Sertifikat: MAG/2023/001</p>
+                                <p class="text-sm">Tanggal Terbit: 20 April 2023</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 flex justify-center space-x-4 no-print">
+                        <button onclick="downloadCertificate('pdf')" class="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700">
+                            <i class="fas fa-file-pdf mr-2"></i>Download PDF
+                        </button>
+                        <button onclick="downloadCertificate('jpg')" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
+                            <i class="fas fa-file-image mr-2"></i>Download JPG
+                        </button>
+                        <button onclick="shareCertificate()" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700">
+                            <i class="fas fa-share-alt mr-2"></i>Bagikan
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Data View Content -->
+            <div id="data-view-content" class="hidden">
+                <div class="bg-white rounded-lg shadow p-6 mb-6">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-6">View Data untuk Prodi</h2>
+                    
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-medium text-gray-800">Filter Data</h3>
+                            <button class="text-indigo-600 hover:text-indigo-800 text-sm" onclick="resetDataViewFilters()">
+                                <i class="fas fa-sync-alt mr-1"></i>Reset Filter
+                            </button>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Tahun Akademik</label>
+                                <select id="academic-year-filter" class="w-full px-4 py-2 border rounded-lg focus:ring-indigo-500 focus:border-indigo-500" onchange="filterDataView()">
+                                    <option value="">Semua Tahun</option>
+                                    <option value="2022/2023" selected>2022/2023</option>
+                                    <option value="2021/2022">2021/2022</option>
+                                    <option value="2020/2021">2020/2021</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Status Magang</label>
+                                <select id="status-filter" class="w-full px-4 py-2 border rounded-lg focus:ring-indigo-500 focus:border-indigo-500" onchange="filterDataView()">
+                                    <option value="">Semua Status</option>
+                                    <option value="Dalam Pendaftaran">Dalam Pendaftaran</option>
+                                    <option value="Sedang Berlangsung">Sedang Berlangsung</option>
+                                    <option value="Selesai">Selesai</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Program Studi</label>
+                                <select id="program-filter" class="w-full px-4 py-2 border rounded-lg focus:ring-indigo-500 focus:border-indigo-500" onchange="filterDataView()">
+                                    <option value="">Semua Prodi</option>
+                                    <option value="Teknik Informatika" selected>Teknik Informatika</option>
+                                    <option value="Sistem Informasi">Sistem Informasi</option>
+                                    <option value="Teknik Komputer">Teknik Komputer</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Perusahaan</label>
+                                <select id="company-filter" class="w-full px-4 py-2 border rounded-lg focus:ring-indigo-500 focus:border-indigo-500" onchange="filterDataView()">
+                                    <option value="">Semua Perusahaan</option>
+                                    <option value="PT. Teknologi Maju">PT. Teknologi Maju</option>
+                                    <option value="PT. Digital Solusi">PT. Digital Solusi</option>
+                                    <option value="PT. Inovasi Teknologi">PT. Inovasi Teknologi</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between items-center mb-4">
+                        <div>
+                            <button onclick="exportToExcel()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 mr-2">
+                                <i class="fas fa-file-excel mr-2"></i>Export Excel
+                            </button>
+                            <button onclick="exportToPDF()" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">
+                                <i class="fas fa-file-pdf mr-2"></i>Export PDF
+                            </button>
+                        </div>
+                        <div class="relative">
+                            <input type="text" id="search-input" class="pl-10 pr-4 py-2 border rounded-lg focus:ring-indigo-500 focus:border-indigo-500" placeholder="Cari mahasiswa..." onkeyup="searchDataView()">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-search text-gray-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">NIM</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Perusahaan</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Periode</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pembimbing</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nilai</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200" id="data-view-table-body">
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">24.01.5164</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Irfan Hakim</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">PT. Teknologi Maju</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">15 Jan - 15 Apr 2023</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-3 py-1 rounded-full text-xs font-medium status-approved">Selesai</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Dr. Ahmad S.T., M.Kom</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">A</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <button class="text-indigo-600 hover:text-indigo-900 mr-3" onclick="viewStudentDetail(1)">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="text-green-600 hover:text-green-900 mr-3" onclick="downloadStudentReport(1)">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                        <button class="text-purple-600 hover:text-purple-900" onclick="viewStudentCertificate(1)">
+                                            <i class="fas fa-certificate"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">24.01.6177</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Ahmad</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">PT. Digital Solusi</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">1 Feb - 30 Apr 2023</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-3 py-1 rounded-full text-xs font-medium status-approved">Sedang Berlangsung</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Dr. Budi S.T., M.Kom</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">-</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <button class="text-indigo-600 hover:text-indigo-900 mr-3" onclick="viewStudentDetail(2)">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="text-green-600 hover:text-green-900 mr-3" onclick="downloadStudentReport(2)">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">24.01.2899</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Budi</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">PT. Inovasi Teknologi</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">10 Jan - 10 Mar 2023</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-3 py-1 rounded-full text-xs font-medium status-approved">Selesai</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Dr. Citra S.T., M.Kom</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">B+</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <button class="text-indigo-600 hover:text-indigo-900 mr-3" onclick="viewStudentDetail(3)">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="text-green-600 hover:text-green-900 mr-3" onclick="downloadStudentReport(3)">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                        <button class="text-purple-600 hover:text-purple-900" onclick="viewStudentCertificate(3)">
+                                            <i class="fas fa-certificate"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">24.01.5425</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Bella</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">PT. Teknologi Maju</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">20 Feb - 20 Mei 2023</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-3 py-1 rounded-full text-xs font-medium status-revision">Dalam Pendaftaran</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">-</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">-</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <button class="text-indigo-600 hover:text-indigo-900 mr-3" onclick="viewStudentDetail(4)">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="text-yellow-600 hover:text-yellow-900" onclick="editStudentRegistration(4)">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="mt-6 flex items-center justify-between">
+                        <div class="text-sm text-gray-500">
+                            Menampilkan 1 sampai 4 dari 4 entri
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="px-3 py-1 border rounded-lg text-gray-700 bg-gray-100 cursor-not-allowed" disabled>
+                                Sebelumnya
+                            </button>
+                            <button class="px-3 py-1 border rounded-lg bg-indigo-600 text-white">
+                                1
+                            </button>
+                            <button class="px-3 py-1 border rounded-lg text-gray-700 hover:bg-gray-100">
+                                Selanjutnya
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Modal for Logbook Entry -->
+    <div id="logbook-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl">
+            <div class="p-4 border-b">
+                <h3 class="text-xl font-semibold text-gray-800">Tambah Log Book Kegiatan</h3>
+                <button class="absolute top-4 right-4 text-gray-500 hover:text-gray-700" onclick="closeModal('logbook-modal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <form id="logbook-form">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal</label>
+                        <input type="date" id="logbook-date" class="w-full px-4 py-2 border rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Aktivitas</label>
+                        <input type="text" id="logbook-activity" class="w-full px-4 py-2 border rounded-lg focus:ring-indigo-500 focus:border-indigo-500" placeholder="Aktivitas yang dilakukan" required>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
+                        <textarea id="logbook-description" class="w-full px-4 py-2 border rounded-lg focus:ring-indigo-500 focus:border-indigo-500" rows="3" placeholder="Deskripsi detail aktivitas" required></textarea>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Durasi (jam)</label>
+                        <input type="number" id="logbook-duration" class="w-full px-4 py-2 border rounded-lg focus:ring-indigo-500 focus:border-indigo-500" min="0.5" max="12" step="0.5" required>
+                    </div>
+                    
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" onclick="closeModal('logbook-modal')" class="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-300">
+                            Batal
+                        </button>
+                        <button type="button" onclick="submitLogbook()" class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700">
+                            Simpan
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal for Report Upload -->
+    <div id="report-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl">
+            <div class="p-4 border-b">
+                <h3 class="text-xl font-semibold text-gray-800">Upload Laporan Magang</h3>
+                <button class="absolute top-4 right-4 text-gray-500 hover:text-gray-700" onclick="closeModal('report-modal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <form id="report-upload-form">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Jenis Laporan</label>
+                        <select id="report-type" class="w-full px-4 py-2 border rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+                            <option value="">Pilih Jenis Laporan</option>
+                            <option value="Mingguan">Laporan Mingguan</option>
+                            <option value="Bulanan">Laporan Bulanan</option>
+                            <option value="Akhir">Laporan Akhir Magang</option>
+                        </select>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Periode Mulai</label>
+                            <input type="date" id="report-start-date" class="w-full px-4 py-2 border rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Periode Selesai</label>
+                            <input type="date" id="report-end-date" class="w-full px-4 py-2 border rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">File Laporan</label>
+                        <div class="mt-1 flex items-center">
+                            <label for="report-file" class="cursor-pointer bg-indigo-50 text-indigo-600 px-4 py-2 rounded-lg border border-indigo-200 hover:bg-indigo-100">
+                                <i class="fas fa-upload mr-2"></i>Pilih File
+                            </label>
+                            <input id="report-file" type="file" class="hidden" accept=".pdf,.doc,.docx" required>
+                            <span id="report-file-name" class="ml-2 text-sm text-gray-500">Belum ada file dipilih</span>
+                        </div>
+                        <p class="mt-1 text-xs text-gray-500">Format file: PDF, DOC, DOCX (maks. 10MB)</p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Keterangan (Opsional)</label>
+                        <textarea id="report-notes" class="w-full px-4 py-2 border rounded-lg focus:ring-indigo-500 focus:border-indigo-500" rows="2" placeholder="Tambahkan keterangan jika perlu"></textarea>
+                    </div>
+                    
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" onclick="closeModal('report-modal')" class="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-300">
+                            Batal
+                        </button>
+                        <button type="button" onclick="submitReport()" class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700">
+                            Upload
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal for Mentoring Schedule -->
+    <div id="mentoring-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl">
+            <div class="p-4 border-b">
+                <h3 class="text-xl font-semibold text-gray-800">Jadwalkan Bimbingan</h3>
+                <button class="absolute top-4 right-4 text-gray-500 hover:text-gray-700" onclick="closeModal('mentoring-modal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <form id="mentoring-schedule-form">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Topik Bimbingan</label>
+                        <input type="text" id="schedule-topic" class="w-full px-4 py-2 border rounded-lg focus:ring-indigo-500 focus:border-indigo-500" placeholder="Topik yang akan dibahas" required>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal</label>
+                            <input type="date" id="schedule-date" class="w-full px-4 py-2 border rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Waktu</label>
+                            <input type="time" id="schedule-time" class="w-full px-4 py-2 border rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Tipe Bimbingan</label>
+                        <select id="schedule-type" class="w-full px-4 py-2 border rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+                            <option value="">Pilih Tipe Bimbingan</option>
+                            <option value="online">Online (Zoom/Meet)</option>
+                            <option value="offline">Offline (Kampus)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
+                        <textarea id="schedule-description" class="w-full px-4 py-2 border rounded-lg focus:ring-indigo-500 focus:border-indigo-500" rows="3" placeholder="Jelaskan secara detail apa yang ingin didiskusikan" required></textarea>
+                    </div>
+                    
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" onclick="closeModal('mentoring-modal')" class="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-300">
+                            Batal
+                        </button>
+                        <button type="button" onclick="submitMentoringSchedule()" class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700">
+                            Jadwalkan
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Handle file input display
+        document.getElementById('acceptance-letter').addEventListener('change', function(e) {
+            const fileName = e.target.files[0] ? e.target.files[0].name : 'Belum ada file dipilih';
+            document.getElementById('file-name').textContent = fileName;
+        });
+        
+        document.getElementById('supporting-docs').addEventListener('change', function(e) {
+            const fileName = e.target.files[0] ? e.target.files[0].name : 'Belum ada file dipilih';
+            document.getElementById('supporting-file-name').textContent = fileName;
+        });
+        
+        document.getElementById('report-file').addEventListener('change', function(e) {
+            const fileName = e.target.files[0] ? e.target.files[0].name : 'Belum ada file dipilih';
+            document.getElementById('report-file-name').textContent = fileName;
+        });
+        
+        // Toggle sidebar
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            sidebar.classList.toggle('collapsed');
+        }
+        
+        // Navigation functions
+        function showDashboard() {
+            hideAllContents();
+            document.getElementById('dashboard-content').classList.remove('hidden');
+            updateActiveNavItem('nav-dashboard');
+            document.getElementById('page-title').textContent = 'Dashboard';
+        }
+        
+        function showRegistration() {
+            hideAllContents();
+            document.getElementById('registration-content').classList.remove('hidden');
+            updateActiveNavItem('nav-registration');
+            document.getElementById('page-title').textContent = 'Pendaftaran Magang';
+        }
+        
+        function showApproval() {
+            hideAllContents();
+            document.getElementById('approval-content').classList.remove('hidden');
+            updateActiveNavItem('nav-approval');
+            document.getElementById('page-title').textContent = 'Approval Magang';
+        }
+        
+        function showMentoring() {
+            hideAllContents();
+            document.getElementById('mentoring-content').classList.remove('hidden');
+            updateActiveNavItem('nav-mentoring');
+            document.getElementById('page-title').textContent = 'Bimbingan';
+        }
+        
+        function showReport() {
+            hideAllContents();
+            document.getElementById('report-content').classList.remove('hidden');
+            updateActiveNavItem('nav-report');
+            document.getElementById('page-title').textContent = 'Laporan Magang';
+        }
+        
+        function showGrading() {
+            hideAllContents();
+            document.getElementById('grading-content').classList.remove('hidden');
+            updateActiveNavItem('nav-grading');
+            document.getElementById('page-title').textContent = 'Penilaian';
+        }
+        
+        function showCertificate() {
+            hideAllContents();
+            document.getElementById('certificate-content').classList.remove('hidden');
+            updateActiveNavItem('nav-certificate');
+            document.getElementById('page-title').textContent = 'Sertifikat';
+        }
+        
+        function showDataView() {
+            hideAllContents();
+            document.getElementById('data-view-content').classList.remove('hidden');
+            updateActiveNavItem('nav-data-view');
+            document.getElementById('page-title').textContent = 'View Data Prodi';
+        }
+        
+        function hideAllContents() {
+            const contents = document.querySelectorAll('main > div[id$="-content"]');
+            contents.forEach(content => {
+                content.classList.add('hidden');
+            });
+        }
+        
+        function updateActiveNavItem(activeId) {
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                item.classList.remove('active');
+            });
+            document.getElementById(activeId).classList.add('active');
+        }
+        
+        // Registration functions
+        function submitRegistration() {
+            const form = document.getElementById('internship-form');
+            if (form.checkValidity()) {
+                // Simulate form submission
+                alert('Pendaftaran magang berhasil dikirim!');
+                // Reset form
+                form.reset();
+                document.getElementById('file-name').textContent = 'Belum ada file dipilih';
+            } else {
+                form.reportValidity();
+            }
+        }
+        
+        function resetRegistrationForm() {
+            if (confirm('Apakah Anda yakin ingin mengosongkan formulir pendaftaran?')) {
+                document.getElementById('internship-form').reset();
+                document.getElementById('file-name').textContent = 'Belum ada file dipilih';
+            }
+        }
+        
+        function viewRegistrationDetail(id) {
+            alert(`Menampilkan detail pendaftaran dengan ID: ${id}`);
+        }
+        
+        function downloadRegistrationFile(id) {
+            alert(`Mengunduh file pendaftaran dengan ID: ${id}`);
+        }
+        
+        function editRegistration(id) {
+            alert(`Mengedit pendaftaran dengan ID: ${id}`);
+        }
+        
+        // Approval functions
+        function viewApprovalDetail(id) {
+            alert(`Menampilkan detail approval dengan ID: ${id}`);
+        }
+        
+        function downloadApprovalLetter(id) {
+            alert(`Mengunduh surat approval dengan ID: ${id}`);
+        }
+        
+        function resubmitApproval(id) {
+            alert(`Mengajukan ulang approval dengan ID: ${id}`);
+        }
+        
+        // Mentoring functions
+        function showScheduleModal() {
+            document.getElementById('mentoring-modal').classList.remove('hidden');
+        }
+        
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+        
+        function submitMentoringRequest() {
+            const form = document.getElementById('mentoring-request-form');
+            if (form.checkValidity()) {
+                alert('Permintaan bimbingan berhasil dikirim!');
+                form.reset();
+                document.getElementById('supporting-file-name').textContent = 'Belum ada file dipilih';
+            } else {
+                form.reportValidity();
+            }
+        }
+        
+        function submitMentoringSchedule() {
+            const form = document.getElementById('mentoring-schedule-form');
+            if (form.checkValidity()) {
+                alert('Jadwal bimbingan berhasil dibuat!');
+                closeModal('mentoring-modal');
+                form.reset();
+            } else {
+                form.reportValidity();
+            }
+        }
+        
+        function viewUpcomingMentoring() {
+            alert('Menampilkan detail bimbingan mendatang');
+        }
+        
+        function viewLastMentoringNotes() {
+            alert('Menampilkan catatan bimbingan terakhir');
+        }
+        
+        function viewMentoringDetail(id) {
+            alert(`Menampilkan detail bimbingan dengan ID: ${id}`);
+        }
+        
+        function downloadMentoringNotes(id) {
+            alert(`Mengunduh catatan bimbingan dengan ID: ${id}`);
+        }
+        
+        // Report functions
+        function showLogbookModal() {
+            document.getElementById('logbook-modal').classList.remove('hidden');
+        }
+        
+        function showReportUploadModal() {
+            document.getElementById('report-modal').classList.remove('hidden');
+        }
+        
+        function submitLogbook() {
+            const form = document.getElementById('logbook-form');
+            if (form.checkValidity()) {
+                alert('Log book berhasil disimpan!');
+                closeModal('logbook-modal');
+                form.reset();
+            } else {
+                form.reportValidity();
+            }
+        }
+        
+        function submitReport() {
+            const form = document.getElementById('report-upload-form');
+            if (form.checkValidity()) {
+                alert('Laporan berhasil diupload!');
+                closeModal('report-modal');
+                form.reset();
+                document.getElementById('report-file-name').textContent = 'Belum ada file dipilih';
+            } else {
+                form.reportValidity();
+            }
+        }
+        
+        function viewReportDetail(id) {
+            alert(`Menampilkan detail laporan dengan ID: ${id}`);
+        }
+        
+        function downloadReport(id) {
+            alert(`Mengunduh laporan dengan ID: ${id}`);
+        }
+        
+        function editReport(id) {
+            alert(`Mengedit laporan dengan ID: ${id}`);
+        }
+        
+        // Grading functions
+        function downloadCompanyGrading() {
+            alert('Mengunduh penilaian dari perusahaan');
+        }
+        
+        function downloadAcademicGrading() {
+            alert('Mengunduh penilaian dari pembimbing akademik');
+        }
+        
+        // Certificate functions
+        function downloadCertificate(format) {
+            alert(`Mengunduh sertifikat dalam format ${format.toUpperCase()}`);
+        }
+        
+        function shareCertificate() {
+            alert('Berbagi sertifikat melalui media sosial');
+        }
+        
+        // Data View functions
+        function resetDataViewFilters() {
+            document.getElementById('academic-year-filter').value = '';
+            document.getElementById('status-filter').value = '';
+            document.getElementById('program-filter').value = '';
+            document.getElementById('company-filter').value = '';
+            document.getElementById('search-input').value = '';
+            filterDataView();
+        }
+        
+        function filterDataView() {
+            // In a real app, this would filter the table data
+            console.log('Filtering data view...');
+        }
+        
+        function searchDataView() {
+            // In a real app, this would search the table data
+            console.log('Searching data view...');
+        }
+        
+        function exportToExcel() {
+            alert('Mengekspor data ke Excel');
+        }
+        
+        function exportToPDF() {
+            alert('Mengekspor data ke PDF');
+        }
+        
+        function viewStudentDetail(id) {
+            alert(`Menampilkan detail mahasiswa dengan ID: ${id}`);
+        }
+        
+        function downloadStudentReport(id) {
+            alert(`Mengunduh laporan mahasiswa dengan ID: ${id}`);
+        }
+        
+        function viewStudentCertificate(id) {
+            alert(`Menampilkan sertifikat mahasiswa dengan ID: ${id}`);
+        }
+        
+        function editStudentRegistration(id) {
+            alert(`Mengedit pendaftaran mahasiswa dengan ID: ${id}`);
+        }
+        
+        // Initialize dashboard as default view
+        document.addEventListener('DOMContentLoaded', function() {
+            showDashboard();
+        });
+    </script>
+</body>
+</html>
